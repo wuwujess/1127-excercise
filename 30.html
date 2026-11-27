@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>八年級英語核心文法與單字・30題闖關大挑戰</title>
+  <!-- 載入 Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 載入 Google Fonts: Noto Sans TC 與 Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #FEF9EC 0%, #F0FDF4 50%, #EFF6FF 100%);
+      color: #1E293B;
+    }
+    .font-en {
+      font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+    }
+    /* 關鍵字螢光標記 */
+    .clue-tag {
+      background-color: #FEF08A;
+      color: #854D0E;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-weight: 800;
+      border-bottom: 2px solid #EAB308;
+    }
+    /* 答錯輕微晃動動畫 */
+    @keyframes gentleShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-7px); }
+      40% { transform: translateX(7px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+    .animate-shake {
+      animation: gentleShake 0.42s ease-in-out;
+    }
+    /* 星星彈出動畫 */
+    @keyframes popIn {
+      0% { transform: scale(0.75); opacity: 0; }
+      70% { transform: scale(1.06); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-pop {
+      animation: popIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    /* 列印樣式 */
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #FFFFFF !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- 頂部狀態列 -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-amber-200/80 shadow-sm no-print">
+    <div class="max-w-5xl mx-auto px-3 sm:px-6 py-3 space-y-2.5">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <!-- 標題與玩家稱號 -->
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center text-xl shadow-sm shrink-0">
+            🏆
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-base sm:text-lg font-black text-slate-800 tracking-tight">八年級英語・30題闖關大挑戰</h1>
+              <span id="player-rank-badge" class="hidden sm:inline-block bg-teal-100 text-teal-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full">
+                🌱 英語冒險新手
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 font-medium">九年級學習扶助特訓｜三選一實戰題型</p>
+          </div>
+        </div>
+
+        <!-- 數據儀表板與操作按鈕 -->
+        <div class="flex items-center gap-1.5 sm:gap-2.5">
+          <div class="bg-amber-50 border border-amber-200 px-2.5 sm:px-3 py-1.5 rounded-xl flex items-center gap-1 text-xs sm:text-sm font-black text-amber-800" title="答對獲得星星數">
+            <span>⭐</span>
+            <span id="stat-stars" class="font-en text-base">0</span>
+          </div>
+          <div class="bg-orange-50 border border-orange-200 px-2.5 sm:px-3 py-1.5 rounded-xl flex items-center gap-1 text-xs sm:text-sm font-black text-orange-700" title="連續答對 Combo">
+            <span>🔥</span>
+            <span id="stat-combo" class="font-en text-base">0</span>
+          </div>
+          <button onclick="toggleSound()" id="btn-sound" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold transition" title="音效開關">
+            🔔
+          </button>
+          <button onclick="openSummaryView()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-black shadow-sm transition flex items-center gap-1.5">
+            <span>📊 成績單 / 錯題本</span>
+            <span id="badge-wrong-count" class="bg-rose-500 text-white text-[11px] px-1.5 py-0.2 rounded-full hidden">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 總體闖關進度條 -->
+      <div class="flex items-center gap-3">
+        <div class="flex-1 bg-slate-200/80 h-2.5 rounded-full overflow-hidden">
+          <div id="global-progress-bar" class="bg-gradient-to-r from-teal-500 via-emerald-500 to-amber-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <span class="text-xs font-black text-slate-600 shrink-0 font-en">
+          <span id="stat-completed" class="text-teal-700 text-sm">0</span> / 30 題完成
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 輕量提示氣泡 (取代 alert) -->
+  <div id="toast-banner" class="fixed bottom-5 right-5 z-50 hidden no-print">
+    <div class="bg-slate-900/95 text-white px-4 py-3 rounded-2xl shadow-xl border border-slate-700 text-sm font-bold flex items-center gap-2.5 animate-pop">
+      <span id="toast-emoji">💡</span>
+      <span id="toast-text">提示訊息</span>
+    </div>
+  </div>
+
+  <!-- 主內容舞台 -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 py-5 sm:py-8 space-y-6">
+
+    <!-- =========================================================
+         視圖 A：六大關卡闖關地圖導覽列（常駐上方可快速切換）
+         ========================================================= -->
+    <section id="stage-map-bar" class="bg-white/90 rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-sm no-print">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs sm:text-sm font-black text-slate-700 flex items-center gap-1.5">
+          <span>🗺️ 六大關卡闖關地圖（每關 5 題，點選可跳關）</span>
+        </span>
+        <div class="flex items-center gap-2">
+          <span id="retry-mode-pill" class="hidden bg-rose-100 text-rose-800 text-xs font-black px-2.5 py-1 rounded-full">
+            🎯 錯題特訓模式中
+          </span>
+          <button onclick="confirmResetProgress()" class="text-xs text-slate-400 hover:text-rose-600 font-bold underline">
+            重置全部進度
+          </button>
+        </div>
+      </div>
+
+      <!-- 6 關卡節點 -->
+      <div id="stage-nodes-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+        <!-- 由 JS 動態生成 6 大關卡按鈕 -->
+      </div>
+    </section>
+
+    <!-- =========================================================
+         視圖 B：主要作答闖關區（單題聚焦 + 鷹架輔助）
+         ========================================================= -->
+    <section id="quiz-play-section" class="space-y-5">
+      <!-- 當前關卡資訊橫幅 -->
+      <div id="current-stage-header" class="bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-3xl p-4 sm:p-5 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span id="stage-pill" class="bg-amber-400 text-slate-950 text-xs font-black px-2.5 py-0.5 rounded-full">第一關</span>
+            <span id="stage-progress-text" class="text-xs sm:text-sm text-teal-100 font-bold">本關第 1 / 5 題</span>
+          </div>
+          <h2 id="stage-title" class="text-lg sm:text-xl font-black mt-1">高頻生活單字大考驗</h2>
+        </div>
+        <!-- 本關 5 題圓點指示器 -->
+        <div id="stage-dots" class="flex items-center gap-2 self-start sm:self-center">
+          <!-- JS 生成 5 個圓點 -->
+        </div>
+      </div>
+
+      <!-- 若為第 6 關圖表/地圖題組，顯示輔助圖卡 -->
+      <div id="visual-stimulus-box" class="hidden bg-white rounded-3xl p-5 sm:p-6 border-2 border-teal-200 shadow-sm">
+        <!-- JS 動態插入 SVG 地圖或海報圖卡 -->
+      </div>
+
+      <!-- 題目主卡片 -->
+      <div id="question-card" class="bg-white rounded-3xl p-5 sm:p-8 border-2 border-slate-200/90 shadow-md space-y-5 transition-all">
+        <!-- 題號標籤 + 語音朗讀 + 偵探放大鏡提示 -->
+        <div class="flex flex-wrap items-center justify-between gap-2.5 border-b border-slate-100 pb-4">
+          <div class="flex items-center gap-2">
+            <span id="q-number-badge" class="bg-slate-800 text-white font-en font-black text-xs sm:text-sm px-3 py-1 rounded-xl">
+              Q1 / 30
+            </span>
+            <span id="q-topic-tag" class="bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-extrabold px-2.5 py-1 rounded-xl">
+              生活核心字彙
+            </span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="speakCurrentQuestion()" class="bg-sky-100 hover:bg-sky-200 active:scale-95 text-sky-900 font-black text-xs sm:text-sm px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+              <span>🔊 朗讀題目</span>
+            </button>
+            <button onclick="toggleHint()" id="btn-hint" class="bg-amber-100 hover:bg-amber-200 active:scale-95 text-amber-900 font-black text-xs sm:text-sm px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+              <span>💡 關鍵字提示</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 偵探放大鏡提示展開區 -->
+        <div id="hint-box" class="hidden bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 text-sm text-amber-950 flex items-start gap-2.5 animate-pop">
+          <span class="text-xl shrink-0">🔍</span>
+          <div>
+            <div class="font-black text-amber-900">偵探放大鏡線索：</div>
+            <p id="hint-text" class="mt-0.5 font-medium leading-relaxed"></p>
+          </div>
+        </div>
+
+        <!-- 題幹文字 -->
+        <div id="q-stem" class="font-en text-lg sm:text-2xl font-extrabold text-slate-800 whitespace-pre-line leading-relaxed py-1">
+          <!-- 題目文字 -->
+        </div>
+
+        <!-- 三選一選項按鈕區 -->
+        <div id="options-container" class="grid grid-cols-1 gap-3 pt-1">
+          <!-- JS 動態生成 3 個大按鈕 -->
+        </div>
+
+        <!-- 即時回饋與白話解析區（作答後展開） -->
+        <div id="feedback-box" class="hidden rounded-2xl p-4 sm:p-5 border-2 space-y-2.5 animate-pop">
+          <div class="flex items-center justify-between gap-2">
+            <div id="feedback-headline" class="font-black text-base sm:text-lg flex items-center gap-2">
+              <!-- 答對/答錯標題 -->
+            </div>
+            <button onclick="speakCorrectSentence()" class="text-xs bg-white/80 hover:bg-white text-slate-700 border border-slate-300 font-bold px-2.5 py-1 rounded-lg">
+              🔊 聽正確唸法
+            </button>
+          </div>
+          <p id="feedback-explanation" class="text-sm sm:text-base leading-relaxed font-medium">
+            <!-- 白話解析 -->
+          </p>
+        </div>
+
+        <!-- 底部導航列：上一題 / 下一題 -->
+        <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+          <button onclick="prevQuestion()" id="btn-prev" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 font-bold text-sm disabled:opacity-40 transition">
+            ← 上一題
+          </button>
+
+          <button onclick="nextQuestion()" id="btn-next" class="bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-black px-6 py-3 rounded-2xl shadow-md text-sm sm:text-base transition flex items-center gap-2">
+            <span id="btn-next-label">下一題</span>
+            <span>➔</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         視圖 C：單關（5題）小結算彈窗面板
+         ========================================================= -->
+    <section id="stage-clear-section" class="hidden bg-white rounded-3xl p-6 sm:p-10 border-2 border-amber-300 shadow-xl text-center space-y-6 animate-pop">
+      <div class="inline-block bg-amber-100 text-amber-900 font-black px-4 py-1.5 rounded-full text-sm">
+        🎊 關卡挑戰完成！
+      </div>
+      <h2 id="clear-stage-title" class="text-2xl sm:text-3xl font-black text-slate-800">第一關：高頻生活單字大考驗</h2>
+
+      <!-- 獲得星星展示 -->
+      <div id="clear-stars-display" class="flex items-center justify-center gap-2 text-4xl sm:text-5xl py-2">
+        ⭐⭐⭐⭐⭐
+      </div>
+
+      <p id="clear-stage-msg" class="text-base sm:text-lg text-slate-600 font-bold max-w-lg mx-auto">
+        你在本關答對了 5 / 5 題！太厲害了！
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+        <button onclick="reviewCurrentStage()" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl border-2 border-slate-300 text-slate-700 hover:bg-slate-50 font-black text-sm sm:text-base transition">
+          👀 回看本關題目
+        </button>
+        <button onclick="proceedToNextStage()" id="btn-proceed-next-stage" class="w-full sm:w-auto bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-black px-8 py-3.5 rounded-2xl shadow-lg text-base transition">
+          🚀 進入下一關挑戰 ➔
+        </button>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         視圖 D：全部通關總結成績單 & 錯題特訓清單
+         ========================================================= -->
+    <section id="summary-section" class="hidden space-y-6 animate-pop">
+      <!-- 頒獎台總結卡 -->
+      <div class="bg-gradient-to-br from-indigo-700 via-teal-700 to-emerald-700 text-white rounded-3xl p-6 sm:p-8 shadow-xl">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="space-y-2.5 text-center md:text-left">
+            <span id="final-medal-badge" class="inline-block bg-amber-400 text-slate-950 font-black px-4 py-1 rounded-full text-sm shadow">
+              🌟 英語潛力新星
+            </span>
+            <h2 class="text-2xl sm:text-4xl font-black tracking-tight">
+              闖關總成績：<span id="final-score-num" class="text-amber-300 font-en">0</span> / 100 分
+            </h2>
+            <p id="final-summary-desc" class="text-teal-100 text-sm sm:text-base max-w-xl leading-relaxed">
+              已完成 0 / 30 題，答對 0 題！把下面的錯題全部再練一遍，篩選測驗一定能順利過關！
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-2.5 shrink-0 w-full md:w-auto no-print">
+            <button onclick="startWrongRetryMode()" id="btn-retry-all-wrong" class="bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black px-6 py-3.5 rounded-2xl shadow-lg text-sm sm:text-base transition flex items-center justify-center gap-2">
+              <span>🎯 一鍵重練所有錯題</span>
+            </button>
+            <div class="flex gap-2">
+              <button onclick="backToQuizFromSummary()" class="flex-1 bg-white/15 hover:bg-white/25 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition">
+                ← 返回題目闖關
+              </button>
+              <button onclick="window.print()" class="bg-white/15 hover:bg-white/25 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition">
+                🖨️ 列印
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 六大關卡正確率長條圖 -->
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-lg font-black text-slate-800 flex items-center gap-2">
+          <span>📈 六大關卡能力診斷分析（看看哪一關最需要加強）</span>
+        </h3>
+        <div id="stage-accuracy-bars" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- JS 動態生成 6 條進度長條圖 -->
+        </div>
+      </div>
+
+      <!-- 錯題特訓清單 -->
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div>
+            <h3 class="text-lg sm:text-xl font-black text-rose-800 flex items-center gap-2">
+              <span>📕 專屬錯題特訓清單（共 <span id="summary-wrong-count" class="font-en">0</span> 題）</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">每題都標註了你的誤選答案、正確答案與破題關鍵字，重練答對後會自動從清單移除！</p>
+          </div>
+          <button onclick="startWrongRetryMode()" class="no-print text-xs sm:text-sm bg-rose-600 hover:bg-rose-700 text-white font-black px-4 py-2 rounded-xl shadow-sm transition">
+            🔥 立刻重練這些錯題
+          </button>
+        </div>
+
+        <div id="wrong-questions-list" class="space-y-4">
+          <!-- JS 動態生成錯題解析卡 -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 頁尾 -->
+  <footer class="text-center text-xs text-slate-400 py-5 px-4 no-print">
+    九年級學習扶助英語特訓系統｜對照國中八年級基本學習內容標準化評量設計
+  </footer>
+
+  <!-- 確認重置進度對話框（取代 confirm()） -->
+  <div id="reset-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 animate-pop">
+      <div class="text-3xl text-center">🔄</div>
+      <h3 class="text-lg font-black text-center text-slate-800">確定要重置全部 30 題進度嗎？</h3>
+      <p class="text-sm text-slate-500 text-center">這將會清除目前的星星數、作答紀錄與錯題本，讓你從第一關第 1 題重新開始挑戰。</p>
+      <div class="flex gap-2.5 pt-2">
+        <button onclick="closeResetModal()" class="flex-1 py-2.5 rounded-xl border border-slate-300 font-bold text-slate-600 hover:bg-slate-50">
+          取消
+        </button>
+        <button onclick="executeResetProgress()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black">
+          確定重置
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       JavaScript 題庫資料與遊戲引擎
+       ========================================================= -->
+  <script>
+    // ---------------------------------------------------------
+    // 1. 六大關卡設定
+    // ---------------------------------------------------------
+    const STAGES = [
+      { id: 1, shortName: '第一關', title: '高頻生活單字大考驗', icon: '🎒', color: 'teal' },
+      { id: 2, shortName: '第二關', title: '時態時間密碼 (現在/過去/未來)', icon: '⏰', color: 'indigo' },
+      { id: 3, shortName: '第三關', title: 'Be 動詞 vs. 助動詞大對決', icon: '⚔️', color: 'amber' },
+      { id: 4, shortName: '第四關', title: '疑問詞與數量選擇題', icon: '❓', color: 'sky' },
+      { id: 5, shortName: '第五關', title: '動名詞、不定詞與連接詞', icon: '🔗', color: 'purple' },
+      { id: 6, shortName: '第六關', title: '問路方位與生活圖表題組', icon: '🗺️', color: 'emerald' }
+    ];
+
+    // ---------------------------------------------------------
+    // 2. 完整 30 題三選一題庫（每關 5 題，完全對應八年級基本學習內容）
+    // ---------------------------------------------------------
+    const QUESTIONS = [
+      // ==================== 第一關：高頻生活單字大考驗（1–5題） ====================
+      {
+        id: 1, stage: 1, topic: '生活動作單字',
+        stem: 'Judy: I\'m learning to cook, but my fish doesn\'t taste good.\nBen: Don\'t worry! You just need a lot of ________.',
+        speakStem: "Judy: I'm learning to cook, but my fish doesn't taste good. Ben: Don't worry! You just need a lot of blank.",
+        hint: '注意句意：剛開始「學煮飯（learning to cook）」還不熟練，需要大量的「練習」。',
+        clueWord: 'learning to cook',
+        options: ['practice', 'holiday', 'weather'],
+        answer: 0,
+        explanation: '剛學煮飯還不夠好吃，需要大量的「練習（practice）」。holiday 是假日，weather 是天氣。'
+      },
+      {
+        id: 2, stage: 1, topic: '場所地點單字',
+        stem: 'Tina loves reading very much. She goes to the ________ to borrow books every weekend.',
+        speakStem: 'Tina loves reading very much. She goes to the blank to borrow books every weekend.',
+        hint: '看到關鍵字「loves reading（喜歡閱讀）」和「borrow books（借書）」，會去哪個場所？',
+        clueWord: 'reading / borrow books',
+        options: ['hospital', 'library', 'beach'],
+        answer: 1,
+        explanation: '喜歡閱讀與借書，週末都會去「圖書館（library）」。hospital 是醫院，beach 是海灘。'
+      },
+      {
+        id: 3, stage: 1, topic: '生活情境形容詞',
+        stem: 'There is a convenience store and an MRT station near my house. Living here is very ________.',
+        speakStem: 'There is a convenience store and an MRT station near my house. Living here is very blank.',
+        hint: '家附近就有超商跟捷運站，生活機能非常「方便」。',
+        clueWord: 'convenience store / MRT station',
+        options: ['healthy', 'convenient', 'hungry'],
+        answer: 1,
+        explanation: '家旁邊就有便利商店與捷運站，住起來非常「方便的（convenient）」。healthy 是健康的，hungry 是飢餓的。'
+      },
+      {
+        id: 4, stage: 1, topic: '日常社交動詞',
+        stem: 'Next Sunday is Kevin\'s birthday. He wants to ________ his classmates to his birthday party.',
+        speakStem: "Next Sunday is Kevin's birthday. He wants to blank his classmates to his birthday party.",
+        hint: '下週日是生日，他想「邀請」同學來參加生日派對。',
+        clueWord: 'birthday party',
+        options: ['invite', 'celebrate', 'sweep'],
+        answer: 0,
+        explanation: '「邀請（invite）」某人來參加派對，英文固定用 invite + 人 + to + 活動。celebrate 是慶祝（後面直接加節日，不加人）。'
+      },
+      {
+        id: 5, stage: 1, topic: '假日與氣候單字',
+        stem: 'A: How\'s the ________ in Taipei today?\nB: It\'s sunny and warm. Let\'s go to the beach!',
+        speakStem: "A: How's the blank in Taipei today? B: It's sunny and warm. Let's go to the beach!",
+        hint: '回答說「It\'s sunny and warm（晴朗又溫暖）」，代表在問今天的「天氣」。',
+        clueWord: 'sunny and warm',
+        options: ['hospital', 'weather', 'sandcastle'],
+        answer: 1,
+        explanation: '回答是晴朗溫暖，所以問句是在問台北今天的「天氣（weather）」。'
+      },
+
+      // ==================== 第二關：時態時間密碼（6–10題） ====================
+      {
+        id: 6, stage: 2, topic: '過去式不規則變化',
+        stem: 'Mom: What did you draw on the card?\nLisa: I ________ two cute rabbits for Grandma.',
+        speakStem: 'Mom: What did you draw on the card? Lisa: I blank two cute rabbits for Grandma.',
+        hint: '看問句的助動詞「did」！問剛剛畫了什麼，回答要用 draw 的過去式。',
+        clueWord: 'did you draw',
+        options: ['draw', 'will draw', 'drew'],
+        answer: 2,
+        explanation: '問句用 did 詢問過去發生的動作，回答要把原形動詞 draw 變成不規則過去式「drew」。'
+      },
+      {
+        id: 7, stage: 2, topic: '過去式 vs. 現在式對比',
+        stem: 'Mr. Wang ________ math at our school last year, but he teaches science now.',
+        speakStem: 'Mr. Wang blank math at our school last year, but he teaches science now.',
+        hint: '圈出前半句的時間關鍵字「last year（去年）」！去年發生的事要用過去式。',
+        clueWord: 'last year',
+        options: ['teaches', 'taught', 'will teach'],
+        answer: 1,
+        explanation: '時間副詞 last year（去年）代表過去時間，因此 teach 要用不規則過去式「taught」。'
+      },
+      {
+        id: 8, stage: 2, topic: '未來式 will + 原形',
+        stem: 'Dad: Will you drive to Tainan tomorrow?\nMom: No, I won\'t. I ________ there by high-speed rail.',
+        speakStem: "Dad: Will you drive to Tainan tomorrow? Mom: No, I won't. I blank there by high-speed rail.",
+        hint: '看時間「tomorrow（明天）」和「No, I won\'t」，事情還沒發生，要用未來式！',
+        clueWord: "tomorrow / No, I won't",
+        options: ['went', 'go', 'will go'],
+        answer: 2,
+        explanation: '明天才要出發（未來時間），所以用「will + 原形動詞」＝ will go。'
+      },
+      {
+        id: 9, stage: 2, topic: '過去式連貫動作',
+        stem: 'Yesterday was a holiday. My family went to Fulong Beach and ________ in the sea all afternoon.',
+        speakStem: 'Yesterday was a holiday. My family went to Fulong Beach and blank in the sea all afternoon.',
+        hint: '句首有「Yesterday（昨天）」，而且前面的動詞是過去式「went」，後面也要用過去式！',
+        clueWord: 'Yesterday / went',
+        options: ['swam', 'swim', 'will swim'],
+        answer: 0,
+        explanation: 'Yesterday（昨天）是過去時間，and 連接兩個過去動作（went 和 swam），swim 的過去式是「swam」。'
+      },
+      {
+        id: 10, stage: 2, topic: '未來式助動詞規則',
+        stem: 'Hurry up! Bus 203 will ________ in 10 minutes. We need to run to the bus stop!',
+        speakStem: 'Hurry up! Bus 203 will blank in 10 minutes. We need to run to the bus stop!',
+        hint: '看到助動詞「will」和「in 10 minutes（10分鐘後）」，will 後面一定要接「最乾淨的原形動詞」！',
+        clueWord: 'will / in 10 minutes',
+        options: ['comes', 'came', 'come'],
+        answer: 2,
+        explanation: '助動詞 will 後面不論主詞是誰，都必須接「原形動詞」，所以選 come。'
+      },
+
+      // ==================== 第三關：Be 動詞 vs. 助動詞大對決（11–15題） ====================
+      {
+        id: 11, stage: 3, topic: '過去式 Be 動詞 + 形容詞',
+        stem: 'Amy: ________ Tom handsome before?\nBen: No, he wasn\'t. He was chubby then, but he is very handsome NOW.',
+        speakStem: "Amy: blank Tom handsome before? Ben: No, he wasn't. He was chubby then, but he is very handsome now.",
+        hint: '陷阱題！句尾有「before（以前）」，但「handsome（帥的）」是形容詞不是動作，不能用 Did！',
+        clueWord: 'handsome / before',
+        options: ['Did', 'Was', 'Is'],
+        answer: 1,
+        explanation: 'handsome 是形容詞（不是一般動作），搭配過去時間 before 與單數主詞 Tom，必須用過去式 Be 動詞「Was」。'
+      },
+      {
+        id: 12, stage: 3, topic: '過去式 Be 動詞單複數',
+        stem: 'The beach ________ very dirty last year, but many people cleaned it up. It\'s clean now.',
+        speakStem: "The beach blank very dirty last year, but many people cleaned it up. It's clean now.",
+        hint: '看時間「last year（去年）」與形容詞「dirty（髒的）」，主詞 The beach 是單數喔！',
+        clueWord: 'dirty / last year',
+        options: ['was', 'were', 'did'],
+        answer: 0,
+        explanation: 'dirty 是形容詞，時間是 last year（去年），單數主詞 The beach 要搭配「was」。'
+      },
+      {
+        id: 13, stage: 3, topic: '過去式地點描述 (Were)',
+        stem: 'Grace: I called you last night, but you ________ not at home.\nKevin: Sorry! I was at the night market with my parents.',
+        speakStem: 'Grace: I called you last night, but you blank not at home. Kevin: Sorry! I was at the night market with my parents.',
+        hint: '看到「last night（昨晚）」和地點「at home（在家）」，主詞是 you，過去式 Be 動詞要用哪個？',
+        clueWord: 'last night / you',
+        options: ['did', 'was', 'were'],
+        answer: 2,
+        explanation: 'last night 是過去時間，在某個地點（at home）要用 Be 動詞，主詞為 you 時固定用「were」。'
+      },
+      {
+        id: 14, stage: 3, topic: '過去式助動詞 Did + 原形',
+        stem: 'Mom: ________ you buy any gift for Jane\'s birthday yesterday?\nKitty: Yes, I bought her a pretty dress.',
+        speakStem: "Mom: blank you buy any gift for Jane's birthday yesterday? Kitty: Yes, I bought her a pretty dress.",
+        hint: '句子裡有一般動作「buy（買）」和過去時間「yesterday（昨天）」，問句開頭要用助動詞！',
+        clueWord: 'buy / yesterday',
+        options: ['Were', 'Did', 'Do'],
+        answer: 1,
+        explanation: '句中有動作動詞 buy 且時間為 yesterday（昨天），要用過去式助動詞「Did」開頭（後面 buy 保持原形）。'
+      },
+      {
+        id: 15, stage: 3, topic: '現在簡單式助動詞 Does',
+        stem: 'Sam: ________ your sister go to school by bike every day?\nTina: No, she doesn\'t. She walks to school.',
+        speakStem: "Sam: blank your sister go to school by bike every day? Tina: No, she doesn't. She walks to school.",
+        hint: '看時間「every day（每天）」和簡答「No, she doesn\'t.」，問句開頭已經給你提示囉！',
+        clueWord: "every day / No, she doesn't",
+        options: ['Is', 'Do', 'Does'],
+        answer: 2,
+        explanation: '簡答用 doesn\'t 回答，且主詞 your sister 是第三人稱單數（每天的習慣），問句開頭用「Does」。'
+      },
+
+      // ==================== 第四關：疑問詞與數量選擇題（16–20題） ====================
+      {
+        id: 16, stage: 4, topic: '選擇疑問詞 Which',
+        stem: 'Clerk: ________ did you buy, the black jacket or the white jacket?\nDavid: I bought the black one.',
+        speakStem: 'Clerk: blank did you buy, the black jacket or the white jacket? David: I bought the black one.',
+        hint: '看到逗號後面有「the black jacket or the white jacket（二選一）」！挑哪一個要用哪個疑問詞？',
+        clueWord: 'the black jacket or the white jacket',
+        options: ['Where', 'Which', 'When'],
+        answer: 1,
+        explanation: '在兩個明確選項中「選哪一個（A or B）」，疑問詞必用「Which」。'
+      },
+      {
+        id: 17, stage: 4, topic: '可數 vs. 不可數數量疑問詞',
+        stem: 'Mom: ________ oranges do we need to make the juice?\nLeo: We need five oranges.',
+        speakStem: 'Mom: blank oranges do we need to make the juice? Leo: We need five oranges.',
+        hint: '看後面的名詞「oranges（柳橙）」有加 s（可數名詞複數），回答說「five oranges（5顆）」！',
+        clueWord: 'oranges / five oranges',
+        options: ['How many', 'How much', 'How long'],
+        answer: 0,
+        explanation: 'oranges 是可數名詞複數，詢問「多少數量」要用「How many」；How much 則接不可數名詞（如 juice, water）。'
+      },
+      {
+        id: 18, stage: 4, topic: '不可數名詞數量疑問詞',
+        stem: 'A: ________ juice can you drink at one time?\nB: About two glasses of juice.',
+        speakStem: 'A: blank juice can you drink at one time? B: About two glasses of juice.',
+        hint: '看後面的名詞「juice（果汁）」是液體（不可數名詞，沒有加 s），要用哪個疑問詞？',
+        clueWord: 'juice',
+        options: ['How many', 'How much', 'Which'],
+        answer: 1,
+        explanation: 'juice（果汁）是不可數名詞，詢問不可數的量要用「How much」。'
+      },
+      {
+        id: 19, stage: 4, topic: '交通方式疑問詞 How',
+        stem: 'Sue: ________ do you usually go to the library?\nWilly: I usually go there by bike.',
+        speakStem: 'Sue: blank do you usually go to the library? Willy: I usually go there by bike.',
+        hint: '回答是「by bike（騎腳踏車）」，在說明交通方式，問句開頭要問「如何/怎麼去」！',
+        clueWord: 'by bike',
+        options: ['Where', 'How', 'Who'],
+        answer: 1,
+        explanation: '回答「by bike（騎單車）」表示交通方式，詢問「如何到達」要用疑問詞「How」。'
+      },
+      {
+        id: 20, stage: 4, topic: '時間長度疑問詞 How long',
+        stem: 'A: ________ does it take to walk from your home to the bus stop?\nB: It takes about ten minutes.',
+        speakStem: 'A: blank does it take to walk from your home to the bus stop? B: It takes about ten minutes.',
+        hint: '回答是「about ten minutes（大約10分鐘）」，在問花費「多久時間」！',
+        clueWord: 'about ten minutes',
+        options: ['How long', 'How often', 'How many'],
+        answer: 0,
+        explanation: '回答「ten minutes（10分鐘）」是一段時間長度，詢問花費多久時間要用「How long」。'
+      },
+
+      // ==================== 第五關：動名詞、不定詞與連接詞（21–25題） ====================
+      {
+        id: 21, stage: 5, topic: '特殊動詞 + V-ing',
+        stem: 'Peter enjoys ________ basketball with his friends after school every Friday.',
+        speakStem: 'Peter enjoys blank basketball with his friends after school every Friday.',
+        hint: '看到動詞「enjoys（享受/喜愛）」！enjoy 後面如果接第二個動作，一定要加 ing 喔！',
+        clueWord: 'enjoys',
+        options: ['play', 'to play', 'playing'],
+        answer: 2,
+        explanation: 'enjoy（喜愛）、practice（練習）、finish（完成）後面只能接動名詞（V-ing），故選「playing」。'
+      },
+      {
+        id: 22, stage: 5, topic: '動詞 + to V (不定詞)',
+        stem: 'We want ________ a sandcastle on the beach, but it is raining outside now.',
+        speakStem: 'We want blank a sandcastle on the beach, but it is raining outside now.',
+        hint: '看到「want（想要）」！want、need、plan 後面要接「to + 原形動詞」。',
+        clueWord: 'want',
+        options: ['to make', 'making', 'made'],
+        answer: 0,
+        explanation: 'want（想要）後面固定接不定詞「to + 原形動詞」，所以選 to make。'
+      },
+      {
+        id: 23, stage: 5, topic: '因果連接詞 because / so',
+        stem: '________ Tom had a high fever last night, he didn\'t go to school today.',
+        speakStem: 'blank Tom had a high fever last night, he didn\'t go to school today.',
+        hint: '注意看句子中間已經有「逗號」隔開，沒有 so！前面是原因「發高燒」，開頭要放「因為」！',
+        clueWord: 'had a high fever (原因)',
+        options: ['So', 'Because', 'But'],
+        answer: 1,
+        explanation: '英文中 because（因為）和 so（所以）不能同時出現在同一個句子裡！前半句是原因，句首用「Because」。'
+      },
+      {
+        id: 24, stage: 5, topic: '時間連接詞 before / after',
+        stem: 'Remember to wash your hands ________ you eat dinner. It\'s a good habit.',
+        speakStem: "Remember to wash your hands blank you eat dinner. It's a good habit.",
+        hint: '常理判斷：應該在吃晚餐「之前」還是「之後」洗手？',
+        clueWord: 'wash your hands / eat dinner',
+        options: ['before', 'after', 'because'],
+        answer: 0,
+        explanation: '飯前洗手是好習慣，在吃晚餐「之前」用「before」。after 是「在…之後」。'
+      },
+      {
+        id: 25, stage: 5, topic: '時間副詞子句 when 的時態',
+        stem: 'When Dad ________ home yesterday evening, Mom was cooking dinner in the kitchen.',
+        speakStem: 'When Dad blank home yesterday evening, Mom was cooking dinner in the kitchen.',
+        hint: '圈出時間「yesterday evening（昨天傍晚）」！昨天的事情要用過去式喔！',
+        clueWord: 'yesterday evening',
+        options: ['comes', 'came', 'will come'],
+        answer: 1,
+        explanation: '句中有過去時間 yesterday evening（昨天傍晚），come 的不規則過去式是「came」。'
+      },
+
+      // ==================== 第六關：問路方位與生活圖表題組（26–30題） ====================
+      {
+        id: 26, stage: 6, topic: '十字路口問路方位',
+        visualType: 'map',
+        stem: '【看地圖選位置】\nSue: Excuse me! How do I get to Hope Hospital?\nWilly: Go along Green Road and turn left at Pink Street. The hospital is next to the school.\n請問 Sue 和 Willy 現在站在地圖上的哪個位置？',
+        speakStem: 'Excuse me! How do I get to Hope Hospital? Go along Green Road and turn left at Pink Street. The hospital is next to the school.',
+        hint: '看地圖：醫院（🏥）在 Pink Street 上方的左邊！要「沿著 Green Road 走並向左轉」，必須從下方（位置 3）往北走才會左轉碰到醫院！',
+        clueWord: 'Go along Green Road and turn left at Pink Street',
+        options: ['位置 (1)：在 Pink Street 左側', '位置 (2)：在 Green Road 上方往南走', '位置 (3)：在 Green Road 下方往北走'],
+        answer: 2,
+        explanation: '從位置 (3) 沿著 Green Road 往上（北）走，在 Pink Street 向左轉（turn left），就能看到醫院（🏥）在學校（🏫）旁邊！'
+      },
+      {
+        id: 27, stage: 6, topic: '建築物相對位置介系詞',
+        visualType: 'map',
+        stem: '【看地圖判讀位置】Look at the map. Where is Hope Hospital (🏥)?',
+        speakStem: 'Look at the map. Where is Hope Hospital?',
+        hint: '觀察地圖左上角：學校（🏫）跟醫院（🏥）緊緊靠在隔壁！',
+        clueWord: '🏫 與 🏥 緊鄰在一起',
+        options: ['It is next to the school.', 'It is on Green Road.', 'It is across from the school.'],
+        answer: 0,
+        explanation: '從地圖上可清楚看到醫院（🏥）就在學校（🏫）的正隔壁，「在…旁邊」是 next to。'
+      },
+      {
+        id: 28, stage: 6, topic: '海報閱讀：時間長度計算',
+        visualType: 'poster',
+        stem: '【看海報回答問題】How long is Ken\'s Flower Shop Opening Party?',
+        speakStem: "How long is Ken's Flower Shop Opening Party?",
+        hint: '看海報中間的時間：「3:00–5:00 p.m.」！用減法算算看 5 點減 3 點是幾個小時？',
+        clueWord: '3:00–5:00 p.m.',
+        options: ['Two hours.', 'Three hours.', 'Five hours.'],
+        answer: 0,
+        explanation: '海報寫 3:00–5:00 p.m.（下午3點到5點），5 - 3 = 2 小時（Two hours），小心不要誤選成 3 小時！'
+      },
+      {
+        id: 29, stage: 6, topic: '海報閱讀：免費好康資訊',
+        visualType: 'poster',
+        stem: '【看海報回答問題】What can Ken\'s friends get FOR FREE at the party?',
+        speakStem: "What can Ken's friends get for free at the party?",
+        hint: '在海報上找大寫的「FOR FREE !」，看它上面寫著帶什麼東西回家？',
+        clueWord: 'take a flower home FOR FREE',
+        options: ['A flower.', 'A dress.', 'A sandcastle.'],
+        answer: 0,
+        explanation: '海報明確寫著「And take a flower home FOR FREE !（免費帶一朵花回家）」，所以選 A flower。'
+      },
+      {
+        id: 30, stage: 6, topic: '海報閱讀：細節判斷',
+        visualType: 'poster',
+        stem: '【看海報回答問題】Which is correct about the opening party?',
+        speakStem: 'Which is correct about the opening party?',
+        hint: '核對海報上的日期（July 8 (Sat.)）和活動內容（Have coffee and cake / Make a flower card）。',
+        clueWord: 'July 8 (Sat.) / Make a flower card',
+        options: ['The party is on Sunday.', 'People can make a flower card at the party.', 'The party is in June.'],
+        answer: 1,
+        explanation: '海報活動列有「Make a flower card（製作花朵卡片）」，因此 (2) 正確！日期是 July（七月）且 Sat. 是星期六。'
+      }
+    ];
+
+    // ---------------------------------------------------------
+    // 3. 第六關專屬 SVG 圖表與海報 HTML 模板
+    // ---------------------------------------------------------
+    const VISUAL_STIMULI = {
+      map: `
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs sm:text-sm font-black text-teal-800">🗺️ 題組圖表：街區十字路口地圖（🏫 School 學校 ｜ 🏥 Hope Hospital 醫院）</span>
+          </div>
+          <svg viewBox="0 0 420 220" class="w-full max-w-md mx-auto h-auto rounded-2xl border border-slate-200 bg-slate-50">
+            <!-- 馬路 -->
+            <rect x="182" y="8" width="52" height="204" fill="#CBD5E1" />
+            <rect x="16" y="92" width="388" height="44" fill="#CBD5E1" />
+            <line x1="208" y1="12" x2="208" y2="208" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="6,6" />
+            <line x1="22" y1="114" x2="398" y2="114" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="6,6" />
+            <!-- 路名 -->
+            <text x="208" y="42" font-size="11" font-weight="bold" fill="#1E293B" text-anchor="middle" transform="rotate(90, 208, 42)">Green Road</text>
+            <text x="95" y="118" font-size="12" font-weight="bold" fill="#1E293B" text-anchor="middle">Pink Street</text>
+            <text x="318" y="118" font-size="12" font-weight="bold" fill="#1E293B" text-anchor="middle">Pink Street</text>
+            <!-- 學校與醫院（位於 Pink Street 上方左側） -->
+            <rect x="98" y="38" width="72" height="46" rx="6" fill="#DBEAFE" stroke="#2563EB" stroke-width="2" />
+            <text x="134" y="59" font-size="16" text-anchor="middle">🏫</text>
+            <text x="134" y="76" font-size="10" font-weight="bold" fill="#1E40AF" text-anchor="middle">School</text>
+
+            <rect x="18" y="38" width="72" height="46" rx="6" fill="#FEE2E2" stroke="#DC2626" stroke-width="2" />
+            <text x="54" y="59" font-size="16" text-anchor="middle">🏥</text>
+            <text x="54" y="76" font-size="10" font-weight="bold" fill="#991B1B" text-anchor="middle">Hospital</text>
+
+            <!-- 三個位置選項標記 -->
+            <circle cx="54" cy="114" r="14" fill="#64748B" />
+            <text x="54" y="118" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">(1)</text>
+
+            <circle cx="208" cy="64" r="14" fill="#64748B" />
+            <text x="208" y="68" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">(2)</text>
+
+            <circle cx="208" cy="170" r="15" fill="#0D9488" stroke="#FFFFFF" stroke-width="2" />
+            <text x="208" y="174" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">(3)</text>
+            <text x="208" y="199" font-size="10" font-weight="bold" fill="#0F766E" text-anchor="middle">⬆ 沿路往北走</text>
+          </svg>
+        </div>
+      `,
+      poster: `
+        <div class="space-y-2">
+          <div class="text-xs sm:text-sm font-black text-amber-900 text-center">🪧 題組圖表：Ken 的花店開幕邀請卡</div>
+          <div class="max-w-md mx-auto bg-gradient-to-b from-amber-50 to-orange-50 border-4 border-double border-amber-600 rounded-2xl p-5 text-center shadow-xs font-en space-y-2">
+            <div class="text-lg sm:text-xl font-black text-amber-950">🌻 Ken's Flower Shop 🌻</div>
+            <div class="text-base sm:text-lg font-extrabold text-rose-700">Opening Party</div>
+            <div class="bg-white py-1.5 px-3 rounded-xl font-black text-slate-800 text-sm sm:text-base border border-amber-300">
+              3:00–5:00 p.m., July 8 (Sat.)
+            </div>
+            <div class="text-sm text-slate-700 pt-1 space-y-1 font-bold">
+              <p>☕ Have coffee and cake</p>
+              <p>💌 Make a flower card</p>
+              <p>🌷 And take a flower home</p>
+              <p class="text-rose-600 font-black text-base">FOR FREE !</p>
+            </div>
+            <div class="text-xs text-slate-500 pt-1">See you at Ken's Flower Shop 😊</div>
+          </div>
+        </div>
+      `
+    };
+
+    // ---------------------------------------------------------
+    // 4. 應用程式狀態與本地儲存 (localStorage)
+    // ---------------------------------------------------------
+    const STORAGE_KEY = 'g8_30quest_challenge_v1';
+
+    let state = {
+      currentIndex: 0,      // 目前題目索引 (0 ~ 29)
+      answers: {},          // { [questionId]: selectedOptionIndex }
+      wrongIds: [],         // 答錯過的題目 id 陣列
+      stars: 0,             // 累積星星數
+      combo: 0,             // 連擊數
+      soundEnabled: true,   // 音效開關
+      retryMode: false,     // 是否處於「錯題特訓模式」
+      retryQueue: [],       // 錯題特訓題目 id 陣列
+      retryPointer: 0       // 錯題特訓目前指標
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          state = { ...state, ...parsed, retryMode: false };
+        }
+      } catch (e) {
+        console.warn('讀取進度失敗', e);
+      }
+    }
+
+    function saveState() {
+      try {
+        const toSave = {
+          currentIndex: state.currentIndex,
+          answers: state.answers,
+          wrongIds: state.wrongIds,
+          stars: state.stars,
+          combo: state.combo,
+          soundEnabled: state.soundEnabled
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+      } catch (e) {
+        console.warn('儲存進度失敗', e);
+      }
+      updateTopDashboard();
+    }
+
+    // ---------------------------------------------------------
+    // 5. Web Audio API 輕快音效 & Web Speech API 英語朗讀
+    // ---------------------------------------------------------
+    let audioCtx = null;
+
+    function playTone(type) {
+      if (!state.soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'correct') {
+          // 輕快上揚雙音 (C5 -> E5 -> G5)
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.08);
+          osc.frequency.setValueAtTime(783.99, now + 0.16);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.36);
+        } else if (type === 'wrong') {
+          // 溫和低音提示
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.linearRampToValueAtTime(210, now + 0.22);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.26);
+        } else if (type === 'clear') {
+          // 過關小ファンファーレ
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.1);
+          osc.frequency.setValueAtTime(783.99, now + 0.2);
+          osc.frequency.setValueAtTime(1046.50, now + 0.32);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+          osc.start(now);
+          osc.stop(now + 0.62);
+        }
+      } catch (e) {
+        // 忽略音訊限制錯誤
+      }
+    }
+
+    function toggleSound() {
+      state.soundEnabled = !state.soundEnabled;
+      document.getElementById('btn-sound').textContent = state.soundEnabled ? '🔔' : '🔕';
+      saveState();
+      showToast(state.soundEnabled ? '已開啟答題音效' : '已切換為靜音模式', state.soundEnabled ? '🔔' : '🔕');
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) {
+        showToast('此瀏覽器不支援語音朗讀功能', '⚠️');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-US';
+      utter.rate = 0.85; // 放慢語速幫助學習扶助學生聽懂
+      window.speechSynthesis.speak(utter);
+    }
+
+    function getActiveQuestion() {
+      if (state.retryMode) {
+        const qId = state.retryQueue[state.retryPointer];
+        return QUESTIONS.find(q => q.id === qId) || QUESTIONS[0];
+      }
+      return QUESTIONS[state.currentIndex];
+    }
+
+    function speakCurrentQuestion() {
+      const q = getActiveQuestion();
+      speakText(q.speakStem || q.stem);
+    }
+
+    function speakCorrectSentence() {
+      const q = getActiveQuestion();
+      const correctWord = q.options[q.answer];
+      // 將題目中的底線替換成正確答案朗讀
+      const fullSentence = (q.speakStem || q.stem).replace(/blank|________/gi, correctWord);
+      speakText(fullSentence);
+    }
+
+    // ---------------------------------------------------------
+    // 6. 輕量提示氣泡
+    // ---------------------------------------------------------
+    let toastTimer = null;
+    function showToast(text, emoji = '💡') {
+      const banner = document.getElementById('toast-banner');
+      document.getElementById('toast-text').textContent = text;
+      document.getElementById('toast-emoji').textContent = emoji;
+      banner.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => banner.classList.add('hidden'), 2600);
+    }
+
+    // ---------------------------------------------------------
+    // 7. 頂部儀表板與六大關卡地圖渲染
+    // ---------------------------------------------------------
+    function updateTopDashboard() {
+      const completedCount = Object.keys(state.answers).length;
+      const percent = Math.round((completedCount / QUESTIONS.length) * 100);
+
+      document.getElementById('stat-stars').textContent = state.stars;
+      document.getElementById('stat-combo').textContent = state.combo;
+      document.getElementById('stat-completed').textContent = completedCount;
+      document.getElementById('global-progress-bar').style.width = `${percent}%`;
+      document.getElementById('btn-sound').textContent = state.soundEnabled ? '🔔' : '🔕';
+
+      // 更新錯題徽章
+      const wrongBadge = document.getElementById('badge-wrong-count');
+      if (state.wrongIds.length > 0) {
+        wrongBadge.textContent = state.wrongIds.length;
+        wrongBadge.classList.remove('hidden');
+      } else {
+        wrongBadge.classList.add('hidden');
+      }
+
+      // 更新玩家稱號
+      const rankBadge = document.getElementById('player-rank-badge');
+      if (state.stars >= 25) {
+        rankBadge.textContent = '👑 篩選測驗滿分王';
+      } else if (state.stars >= 15) {
+        rankBadge.textContent = '🚀 文法破關達人';
+      } else if (state.stars >= 5) {
+        rankBadge.textContent = '⭐ 英語潛力新星';
+      } else {
+        rankBadge.textContent = '🌱 英語冒險新手';
+      }
+
+      renderStageMap();
+    }
+
+    function renderStageMap() {
+      const grid = document.getElementById('stage-nodes-grid');
+      const activeQ = getActiveQuestion();
+      const activeStageId = activeQ.stage;
+
+      document.getElementById('retry-mode-pill').classList.toggle('hidden', !state.retryMode);
+
+      grid.innerHTML = STAGES.map(st => {
+        const stageQuestions = QUESTIONS.filter(q => q.stage === st.id);
+        const answeredInStage = stageQuestions.filter(q => state.answers[q.id] !== undefined).length;
+        const correctInStage = stageQuestions.filter(q => state.answers[q.id] === q.answer).length;
+        const isCurrent = !state.retryMode && activeStageId === st.id;
+        const isAllDone = answeredInStage === 5;
+
+        return `
+          <button onclick="jumpToStage(${st.id})" class="p-2.5 sm:p-3 rounded-2xl border-2 text-left transition flex flex-col justify-between ${isCurrent ? 'bg-teal-600 border-teal-700 text-white shadow-md scale-[1.02]' : (isAllDone ? 'bg-emerald-50/80 border-emerald-300 text-slate-800 hover:bg-emerald-100/70' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-amber-50')}">
+            <div class="flex items-center justify-between w-full">
+              <span class="text-xs font-black ${isCurrent ? 'text-amber-300' : 'text-teal-700'}">${st.icon} ${st.shortName}</span>
+              <span class="text-[11px] font-en font-extrabold ${isCurrent ? 'text-teal-100' : 'text-slate-400'}">
+                ${isAllDone ? `⭐${correctInStage}/5` : `${answeredInStage}/5`}
+              </span>
+            </div>
+            <div class="text-xs font-bold mt-1 line-clamp-1">${st.title}</div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function jumpToStage(stageId) {
+      state.retryMode = false;
+      const firstIndex = QUESTIONS.findIndex(q => q.stage === stageId);
+      if (firstIndex >= 0) {
+        state.currentIndex = firstIndex;
+        saveState();
+        showQuizSection();
+        renderQuestion();
+      }
+    }
+
+    // ---------------------------------------------------------
+    // 8. 渲染當前題目與作答互動
+    // ---------------------------------------------------------
+    function showQuizSection() {
+      document.getElementById('quiz-play-section').classList.remove('hidden');
+      document.getElementById('stage-clear-section').classList.add('hidden');
+      document.getElementById('summary-section').classList.add('hidden');
+    }
+
+    function renderQuestion() {
+      const q = getActiveQuestion();
+      const stageInfo = STAGES.find(s => s.id === q.stage);
+
+      // 更新關卡標題列
+      const headerEl = document.getElementById('current-stage-header');
+      if (state.retryMode) {
+        headerEl.className = 'bg-gradient-to-r from-rose-600 to-orange-600 text-white rounded-3xl p-4 sm:p-5 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+        document.getElementById('stage-pill').textContent = '🎯 錯題特訓模式';
+        document.getElementById('stage-progress-text').textContent = `待訂正第 ${state.retryPointer + 1} / ${state.retryQueue.length} 題`;
+        document.getElementById('stage-title').textContent = '把答錯的題目重新練對，即可消滅錯題！';
+      } else {
+        headerEl.className = 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-3xl p-4 sm:p-5 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+        const indexInStage = ((q.id - 1) % 5) + 1;
+        document.getElementById('stage-pill').textContent = `${stageInfo.icon} ${stageInfo.shortName}`;
+        document.getElementById('stage-progress-text').textContent = `本關第 ${indexInStage} / 5 題`;
+        document.getElementById('stage-title').textContent = stageInfo.title;
+      }
+
+      // 渲染本關 5 題圓點指示器
+      const dotsContainer = document.getElementById('stage-dots');
+      if (state.retryMode) {
+        dotsContainer.innerHTML = '';
+      } else {
+        const stageQuestions = QUESTIONS.filter(item => item.stage === q.stage);
+        dotsContainer.innerHTML = stageQuestions.map(sq => {
+          const ans = state.answers[sq.id];
+          let dotClass = 'bg-white/30 border-white/50';
+          if (ans !== undefined) {
+            dotClass = ans === sq.answer ? 'bg-amber-300 border-white scale-110' : 'bg-rose-400 border-white';
+          }
+          if (sq.id === q.id) {
+            dotClass += ' ring-2 ring-white ring-offset-2 ring-offset-teal-600';
+          }
+          return `<button onclick="jumpToQuestionId(${sq.id})" class="w-4 h-4 rounded-full border transition ${dotClass}" title="第 ${sq.id} 題"></button>`;
+        }).join('');
+      }
+
+      // 若為第 6 關圖表題組，顯示地圖或海報
+      const stimulusBox = document.getElementById('visual-stimulus-box');
+      if (q.visualType && VISUAL_STIMULI[q.visualType]) {
+        stimulusBox.innerHTML = VISUAL_STIMULI[q.visualType];
+        stimulusBox.classList.remove('hidden');
+      } else {
+        stimulusBox.classList.add('hidden');
+      }
+
+      // 題目資訊
+      document.getElementById('q-number-badge').textContent = `第 ${q.id} 題 / 共 30 題`;
+      document.getElementById('q-topic-tag').textContent = q.topic;
+      document.getElementById('q-stem').textContent = q.stem;
+
+      // 重設提示框狀態
+      const hintBox = document.getElementById('hint-box');
+      hintBox.classList.add('hidden');
+      document.getElementById('hint-text').innerHTML = `${q.hint} <span class="clue-tag font-en ml-1">${q.clueWord}</span>`;
+
+      // 檢查作答狀態（錯題特訓模式下允許重新作答）
+      const userChoice = state.retryMode ? state.retryTempChoice : state.answers[q.id];
+      const hasAnswered = userChoice !== undefined;
+
+      // 渲染三選一按鈕
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = q.options.map((opt, idx) => {
+        let btnClass = 'bg-slate-50 hover:bg-teal-50/80 border-slate-200 hover:border-teal-400 text-slate-800';
+        let badgeHtml = '';
+
+        if (hasAnswered) {
+          if (idx === q.answer) {
+            btnClass = 'bg-emerald-500 border-emerald-600 text-white shadow-md';
+            badgeHtml = '<span class="bg-white text-emerald-700 text-xs font-black px-2.5 py-1 rounded-lg">✅ 正確答案</span>';
+          } else if (idx === userChoice) {
+            btnClass = 'bg-rose-500 border-rose-600 text-white';
+            badgeHtml = '<span class="bg-white text-rose-700 text-xs font-black px-2.5 py-1 rounded-lg">❌ 你的選擇</span>';
+          } else {
+            btnClass = 'bg-slate-50 border-slate-200 text-slate-400 opacity-65';
+          }
+        }
+
+        return `
+          <button onclick="handleSelectOption(${idx})" ${hasAnswered ? 'disabled' : ''} class="w-full p-4 sm:p-5 rounded-2xl border-2 text-left font-en font-extrabold text-base sm:text-lg transition flex items-center justify-between gap-3 ${btnClass}">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-xl ${hasAnswered && (idx === q.answer || idx === userChoice) ? 'bg-black/15 text-white' : 'bg-white border border-slate-300 text-slate-700'} flex items-center justify-center text-sm font-black shrink-0">
+                ${idx + 1}
+              </span>
+              <span>${opt}</span>
+            </div>
+            ${badgeHtml}
+          </button>
+        `;
+      }).join('');
+
+      // 渲染即時回饋解析區
+      const feedbackBox = document.getElementById('feedback-box');
+      if (hasAnswered) {
+        const isCorrect = userChoice === q.answer;
+        feedbackBox.classList.remove('hidden');
+        if (isCorrect) {
+          feedbackBox.className = 'rounded-2xl p-4 sm:p-5 border-2 bg-emerald-50 border-emerald-300 text-emerald-950 space-y-2 animate-pop';
+          document.getElementById('feedback-headline').innerHTML = `<span>🎉 太棒了！答對囉！（關鍵字：<span class="clue-tag font-en text-sm">${q.clueWord}</span>）</span>`;
+        } else {
+          feedbackBox.className = 'rounded-2xl p-4 sm:p-5 border-2 bg-rose-50 border-rose-300 text-rose-950 space-y-2 animate-pop';
+          document.getElementById('feedback-headline').innerHTML = `<span>💪 差一點點！別氣餒，看懂關鍵字就會了！</span>`;
+        }
+        document.getElementById('feedback-explanation').textContent = `💡 白話解析：${q.explanation}`;
+      } else {
+        feedbackBox.classList.add('hidden');
+      }
+
+      // 更新上一題 / 下一題按鈕文字
+      document.getElementById('btn-prev').disabled = state.retryMode ? state.retryPointer === 0 : state.currentIndex === 0;
+      const nextLabel = document.getElementById('btn-next-label');
+      if (state.retryMode) {
+        nextLabel.textContent = state.retryPointer < state.retryQueue.length - 1 ? '下一題錯題' : '完成錯題特訓';
+      } else if ((q.id % 5) === 0) {
+        nextLabel.textContent = q.id === 30 ? '查看全部通關成績單' : '看本關結算星星';
+      } else {
+        nextLabel.textContent = '下一題';
+      }
+    }
+
+    function jumpToQuestionId(qId) {
+      state.retryMode = false;
+      const idx = QUESTIONS.findIndex(q => q.id === qId);
+      if (idx >= 0) {
+        state.currentIndex = idx;
+        saveState();
+        renderQuestion();
+      }
+    }
+
+    function toggleHint() {
+      const box = document.getElementById('hint-box');
+      box.classList.toggle('hidden');
+    }
+
+    function handleSelectOption(selectedIdx) {
+      const q = getActiveQuestion();
+      const isCorrect = selectedIdx === q.answer;
+
+      if (state.retryMode) {
+        state.retryTempChoice = selectedIdx;
+        if (isCorrect) {
+          playTone('correct');
+          // 從錯題清單中移除
+          state.wrongIds = state.wrongIds.filter(id => id !== q.id);
+          state.answers[q.id] = selectedIdx;
+          state.stars += 1;
+          showToast('太讚了！成功訂正並消滅這道錯題！', '🌟');
+        } else {
+          playTone('wrong');
+          triggerCardShake();
+          showToast('再仔細看一次上方的黃色關鍵字提示喔！', '🔍');
+        }
+        saveState();
+        renderQuestion();
+        return;
+      }
+
+      // 一般闖關模式
+      if (state.answers[q.id] !== undefined) return;
+      state.answers[q.id] = selectedIdx;
+
+      if (isCorrect) {
+        playTone('correct');
+        state.stars += 1;
+        state.combo += 1;
+        // 若之前曾在錯題本，答對則移除
+        state.wrongIds = state.wrongIds.filter(id => id !== q.id);
+        if (state.combo >= 3) {
+          showToast(`🔥 連續答對 ${state.combo} 題！太神啦！`, '🔥');
+        }
+      } else {
+        playTone('wrong');
+        state.combo = 0;
+        if (!state.wrongIds.includes(q.id)) {
+          state.wrongIds.push(q.id);
+        }
+        triggerCardShake();
+      }
+
+      saveState();
+      renderQuestion();
+    }
+
+    function triggerCardShake() {
+      const card = document.getElementById('question-card');
+      card.classList.remove('animate-shake');
+      void card.offsetWidth; // 強制重繪以重新觸發動畫
+      card.classList.add('animate-shake');
+    }
+
+    // ---------------------------------------------------------
+    // 9. 上一題 / 下一題與單關結算流程
+    // ---------------------------------------------------------
+    function prevQuestion() {
+      if (state.retryMode) {
+        if (state.retryPointer > 0) {
+          state.retryPointer--;
+          state.retryTempChoice = undefined;
+          renderQuestion();
+        }
+        return;
+      }
+      if (state.currentIndex > 0) {
+        state.currentIndex--;
+        saveState();
+        renderQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      if (state.retryMode) {
+        if (state.retryPointer < state.retryQueue.length - 1) {
+          state.retryPointer++;
+          state.retryTempChoice = undefined;
+          renderQuestion();
+        } else {
+          state.retryMode = false;
+          state.retryTempChoice = undefined;
+          openSummaryView();
+          showToast('錯題特訓巡迴結束！看看還剩幾題吧！', '🎉');
+        }
+        return;
+      }
+
+      const currentQ = QUESTIONS[state.currentIndex];
+      // 若剛好是每關第 5 題（第 5, 10, 15, 20, 25, 30 題），且該關 5 題皆已作答，顯示關卡小結算
+      if (currentQ.id % 5 === 0) {
+        const stageQuestions = QUESTIONS.filter(q => q.stage === currentQ.stage);
+        const allAnswered = stageQuestions.every(q => state.answers[q.id] !== undefined);
+        if (allAnswered) {
+          showStageClearScreen(currentQ.stage);
+          return;
+        }
+      }
+
+      if (state.currentIndex < QUESTIONS.length - 1) {
+        state.currentIndex++;
+        saveState();
+        renderQuestion();
+      } else {
+        openSummaryView();
+      }
+    }
+
+    function showStageClearScreen(stageId) {
+      playTone('clear');
+      const stageInfo = STAGES.find(s => s.id === stageId);
+      const stageQuestions = QUESTIONS.filter(q => q.stage === stageId);
+      const correctCount = stageQuestions.filter(q => state.answers[q.id] === q.answer).length;
+
+      document.getElementById('quiz-play-section').classList.add('hidden');
+      document.getElementById('summary-section').classList.add('hidden');
+      const clearSec = document.getElementById('stage-clear-section');
+      clearSec.classList.remove('hidden');
+
+      document.getElementById('clear-stage-title').textContent = `${stageInfo.icon} ${stageInfo.shortName}：${stageInfo.title}`;
+
+      // 星星圖示
+      let starsHtml = '';
+      for (let i = 1; i <= 5; i++) {
+        starsHtml += i <= correctCount ? '<span>⭐</span>' : '<span class="opacity-25">⭐</span>';
+      }
+      document.getElementById('clear-stars-display').innerHTML = starsHtml;
+
+      let msg = `你在本關答對了 ${correctCount} / 5 題！`;
+      if (correctCount === 5) msg += ' 完美全對，基礎超級穩固！';
+      else if (correctCount >= 3) msg += ' 表現很棒，繼續保持抓關鍵字的節奏！';
+      else msg += ' 答錯的題目都已存進錯題本，等一下可以再練一次！';
+      document.getElementById('clear-stage-msg').textContent = msg;
+
+      const btnNextStage = document.getElementById('btn-proceed-next-stage');
+      if (stageId < 6) {
+        btnNextStage.textContent = `🚀 進入第 ${stageId + 1} 關挑戰 ➔`;
+      } else {
+        btnNextStage.textContent = '🏆 查看全部 30 題總成績單 ➔';
+      }
+    }
+
+    function reviewCurrentStage() {
+      const currentQ = QUESTIONS[state.currentIndex];
+      const firstIdx = QUESTIONS.findIndex(q => q.stage === currentQ.stage);
+      state.currentIndex = firstIdx;
+      showQuizSection();
+      renderQuestion();
+    }
+
+    function proceedToNextStage() {
+      const currentQ = QUESTIONS[state.currentIndex];
+      if (currentQ.stage < 6) {
+        jumpToStage(currentQ.stage + 1);
+      } else {
+        openSummaryView();
+      }
+    }
+
+    // ---------------------------------------------------------
+    // 10. 總成績單與錯題特訓清單視圖
+    // ---------------------------------------------------------
+    function openSummaryView() {
+      document.getElementById('quiz-play-section').classList.add('hidden');
+      document.getElementById('stage-clear-section').classList.add('hidden');
+      document.getElementById('summary-section').classList.remove('hidden');
+
+      const completedCount = Object.keys(state.answers).length;
+      const correctTotal = QUESTIONS.filter(q => state.answers[q.id] === q.answer).length;
+      const score = Math.round((correctTotal / QUESTIONS.length) * 100);
+
+      document.getElementById('final-score-num').textContent = score;
+      document.getElementById('final-summary-desc').textContent =
+        `目前已完成 ${completedCount} / 30 題，共答對 ${correctTotal} 題！把下面的錯題全部再練一遍，正式篩選測驗一定能順利過關！`;
+
+      const medalBadge = document.getElementById('final-medal-badge');
+      if (score >= 85) medalBadge.textContent = '👑 篩選測驗滿分王';
+      else if (score >= 60) medalBadge.textContent = '🏅 文法破關達人';
+      else medalBadge.textContent = '🌟 英語潛力新星';
+
+      // 六大關卡正確率長條圖
+      const barsContainer = document.getElementById('stage-accuracy-bars');
+      barsContainer.innerHTML = STAGES.map(st => {
+        const sqs = QUESTIONS.filter(q => q.stage === st.id);
+        const correctCnt = sqs.filter(q => state.answers[q.id] === q.answer).length;
+        const pct = Math.round((correctCnt / 5) * 100);
+        const barColor = pct >= 80 ? 'bg-emerald-500' : (pct >= 60 ? 'bg-amber-400' : 'bg-rose-400');
+
+        return `
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+            <div class="flex items-center justify-between text-xs sm:text-sm font-black">
+              <span>${st.icon} ${st.shortName}：${st.title}</span>
+              <span class="font-en text-slate-700">${correctCnt}/5 (${pct}%)</span>
+            </div>
+            <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+              <div class="${barColor} h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 錯題清單渲染
+      const wrongListEl = document.getElementById('wrong-questions-list');
+      document.getElementById('summary-wrong-count').textContent = state.wrongIds.length;
+
+      const btnRetryAll = document.getElementById('btn-retry-all-wrong');
+      if (state.wrongIds.length === 0) {
+        btnRetryAll.classList.add('opacity-50', 'pointer-events-none');
+        wrongListEl.innerHTML = `
+          <div class="text-center py-8 bg-emerald-50/60 rounded-2xl border border-emerald-200 space-y-2">
+            <div class="text-4xl">🎉</div>
+            <div class="text-lg font-black text-emerald-900">太棒了！目前沒有任何待訂正的錯題！</div>
+            <p class="text-xs sm:text-sm text-emerald-700">你可以繼續挑戰尚未完成的關卡，或點擊列印保留你的成績單。</p>
+          </div>
+        `;
+      } else {
+        btnRetryAll.classList.remove('opacity-50', 'pointer-events-none');
+        wrongListEl.innerHTML = state.wrongIds.map(wId => {
+          const q = QUESTIONS.find(item => item.id === wId);
+          const st = STAGES.find(s => s.id === q.stage);
+          const userAns = state.answers[q.id];
+
+          return `
+            <div class="p-4 sm:p-5 rounded-2xl border-2 border-rose-200 bg-rose-50/30 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="bg-slate-800 text-white text-xs font-black px-2.5 py-1 rounded-lg">第 ${q.id} 題</span>
+                  <span class="bg-indigo-100 text-indigo-800 text-xs font-extrabold px-2.5 py-1 rounded-lg">${st.shortName}｜${q.topic}</span>
+                </div>
+                <button onclick="retrySingleWrong(${q.id})" class="no-print text-xs bg-teal-600 hover:bg-teal-700 text-white font-black px-3 py-1.5 rounded-xl transition">
+                  🎯 單題重練
+                </button>
+              </div>
+
+              <div class="font-en text-sm sm:text-base font-extrabold text-slate-800 whitespace-pre-line">
+                ${q.stem}
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs sm:text-sm font-en">
+                ${q.options.map((opt, idx) => {
+                  let cls = 'bg-white border-slate-200 text-slate-500';
+                  let tag = '';
+                  if (idx === q.answer) {
+                    cls = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-black';
+                    tag = '✅ 正解';
+                  } else if (idx === userAns) {
+                    cls = 'bg-rose-50 border-rose-400 text-rose-800 font-bold';
+                    tag = '❌ 誤選';
+                  }
+                  return `
+                    <div class="p-2.5 rounded-xl border-2 flex items-center justify-between ${cls}">
+                      <span>(${idx + 1}) ${opt}</span>
+                      <span>${tag}</span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+
+              <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs sm:text-sm text-slate-700 space-y-1">
+                <div>🔍 <strong>破題關鍵字：</strong><span class="clue-tag font-en">${q.clueWord}</span></div>
+                <div>💡 <strong>老師解析：</strong>${q.explanation}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function backToQuizFromSummary() {
+      state.retryMode = false;
+      showQuizSection();
+      renderQuestion();
+    }
+
+    function startWrongRetryMode() {
+      if (state.wrongIds.length === 0) {
+        showToast('目前沒有錯題需要重練喔！', '🎉');
+        return;
+      }
+      state.retryMode = true;
+      state.retryQueue = [...state.wrongIds];
+      state.retryPointer = 0;
+      state.retryTempChoice = undefined;
+      showQuizSection();
+      renderStageMap();
+      renderQuestion();
+      showToast(`進入錯題特訓！共 ${state.retryQueue.length} 題待消滅！`, '🔥');
+    }
+
+    function retrySingleWrong(qId) {
+      state.retryMode = true;
+      state.retryQueue = [qId];
+      state.retryPointer = 0;
+      state.retryTempChoice = undefined;
+      showQuizSection();
+      renderStageMap();
+      renderQuestion();
+    }
+
+    // ---------------------------------------------------------
+    // 11. 重置確認對話框
+    // ---------------------------------------------------------
+    function confirmResetProgress() {
+      document.getElementById('reset-modal').classList.remove('hidden');
+    }
+
+    function closeResetModal() {
+      document.getElementById('reset-modal').classList.add('hidden');
+    }
+
+    function executeResetProgress() {
+      localStorage.removeItem(STORAGE_KEY);
+      state = {
+        currentIndex: 0,
+        answers: {},
+        wrongIds: [],
+        stars: 0,
+        combo: 0,
+        soundEnabled: state.soundEnabled,
+        retryMode: false,
+        retryQueue: [],
+        retryPointer: 0
+      };
+      closeResetModal();
+      saveState();
+      showQuizSection();
+      renderQuestion();
+      showToast('已重置全部進度，從第一關第 1 題重新出發！', '🔄');
+    }
+
+    // ---------------------------------------------------------
+    // 12. 啟動初始化
+    // ---------------------------------------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      updateTopDashboard();
+      showQuizSection();
+      renderQuestion();
+    });
+  </script>
+</body>
+</html>
